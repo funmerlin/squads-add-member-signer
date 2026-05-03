@@ -15,7 +15,7 @@ npm install
 npm run dev
 ```
 
-Open the Vite URL in a browser with a Solana wallet extension installed. By default the app uses `https://api.mainnet-beta.solana.com`.
+Open the Vite URL in a browser with a Solana wallet extension installed. By default the app uses `https://roxy-tv7lra-fast-mainnet.helius-rpc.com`.
 
 To use another mainnet RPC endpoint:
 

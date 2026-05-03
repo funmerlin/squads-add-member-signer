@@ -8,7 +8,7 @@ import './styles.css';
 const MULTISIG_ADDRESS = 'JASQbqB7uJ3zEyVyCjrYe5CDEMHtVZrWLhSMZFzmoQcU';
 const NEW_MEMBER_ADDRESS = '6oa6SurNZeFx88vXtGRYggmQzyu6MNZ1qW927tXzSipk';
 const CLUSTER_CHAIN = 'solana:mainnet' as const;
-const RPC_URL = import.meta.env.VITE_SOLANA_RPC_URL ?? 'https://api.mainnet-beta.solana.com';
+const RPC_URL = import.meta.env.VITE_SOLANA_RPC_URL ?? 'https://roxy-tv7lra-fast-mainnet.helius-rpc.com';
 
 const { Permission, Permissions } = multisig.types;
 
