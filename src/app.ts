@@ -21,6 +21,7 @@ type PreparedTransaction = {
 type StatusTone = 'muted' | 'ok' | 'warn' | 'error';
 
 const availableWallets = new Map<string, Adapter>();
+const syncedWalletsBySelector = new WeakMap<object, Set<string>>();
 const connection = new Connection(RPC_URL, 'confirmed');
 const multisigPda = new PublicKey(MULTISIG_ADDRESS);
 const newMember = new PublicKey(NEW_MEMBER_ADDRESS);
@@ -263,8 +264,18 @@ async function syncWalletSelectorOptions(): Promise<void> {
     return;
   }
 
+  let syncedWallets = syncedWalletsBySelector.get(walletSelectorEl);
+  if (!syncedWallets) {
+    syncedWallets = new Set<string>();
+    syncedWalletsBySelector.set(walletSelectorEl, syncedWallets);
+  }
+
   for (const wallet of availableWallets.values()) {
+    if (syncedWallets.has(wallet.name)) {
+      continue;
+    }
     await walletSelectorEl.addWalletOption(wallet);
+    syncedWallets.add(wallet.name);
   }
 }
 
