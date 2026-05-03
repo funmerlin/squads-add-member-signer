@@ -1,11 +1,11 @@
-import { Buffer } from 'buffer';
+import { Buffer } from 'buffer/';
 import { WalletConnector } from '@aephia/solana-wallet-adapter';
 import { defineAepWalletConnectButton, defineAepWalletSelector } from '@aephia/solana-wallet-adapter/ui';
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import * as multisig from '@sqds/multisig';
 import './styles.css';
 
-globalThis.Buffer = Buffer;
+globalThis.Buffer = Buffer as unknown as typeof globalThis.Buffer;
 
 const MULTISIG_ADDRESS = 'JASQbqB7uJ3zEyVyCjrYe5CDEMHtVZrWLhSMZFzmoQcU';
 const NEW_MEMBER_ADDRESS = '6oa6SurNZeFx88vXtGRYggmQzyu6MNZ1qW927tXzSipk';
