@@ -10,18 +10,6 @@ The app uses wallet signing only. It never asks for private keys, never exports 
 
 ## Run Locally
 
-This project expects the adapter repo to exist as a sibling directory because it depends on the local package path `file:../solana-wallet-adapter`.
-
-Example layout:
-
-```text
-Aephia/
-├── solana-wallet-adapter/
-└── squads-add-member-signer/
-```
-
-Then run:
-
 ```bash
 npm install
 npm run dev
@@ -43,8 +31,4 @@ VITE_SOLANA_RPC_URL="https://your-rpc.example.com" npm run dev
 4. Use `Sign transaction` to get a signed base64 transaction without broadcasting.
 5. Use `Sign and send` only when you intentionally want the wallet to broadcast.
 
-The wallet adapter dependency points at the local package:
-
-```json
-"@aephia/solana-wallet-adapter": "file:../solana-wallet-adapter"
-```
+The app uses the published `@aephia/solana-wallet-adapter` package from npm.
