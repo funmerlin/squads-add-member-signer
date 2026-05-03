@@ -1,0 +1,25 @@
+{
+  "name": "squads-add-member-signer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc && vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@aephia/solana-wallet-adapter": "file:../solana-wallet-adapter",
+    "@solana/web3.js": "1.98.0",
+    "@sqds/multisig": "^2.1.4",
+    "buffer": "^6.0.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-legacy": "^6.1.0",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0"
+  },
+  "overrides": {
+    "@solana/web3.js": "1.98.0"
+  }
+}
