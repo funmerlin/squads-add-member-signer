@@ -1,4 +1,5 @@
 import { WalletConnector } from '@aephia/solana-wallet-adapter';
+import type { Adapter } from '@solana/wallet-adapter-base';
 import { defineAepWalletConnectButton, defineAepWalletSelector } from '@aephia/solana-wallet-adapter/ui';
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import * as multisig from '@sqds/multisig';
@@ -19,7 +20,7 @@ type PreparedTransaction = {
 
 type StatusTone = 'muted' | 'ok' | 'warn' | 'error';
 
-const connector = new WalletConnector();
+const availableWallets = new Map<string, Adapter>();
 const connection = new Connection(RPC_URL, 'confirmed');
 const multisigPda = new PublicKey(MULTISIG_ADDRESS);
 const newMember = new PublicKey(NEW_MEMBER_ADDRESS);
@@ -36,6 +37,14 @@ let status: { tone: StatusTone; message: string } = {
 
 defineAepWalletSelector();
 defineAepWalletConnectButton();
+
+document.addEventListener('aep:wc:wallet-available', (event) => {
+  const wallet = event.detail;
+  availableWallets.set(wallet.name, wallet);
+  void syncWalletSelectorOptions();
+});
+
+const connector = new WalletConnector();
 
 document.addEventListener('aep:wc:connection', (event) => {
   const wallet = event.detail;
@@ -220,6 +229,7 @@ function render(): void {
       </section>
 
       <section class="review">
+        <aep-wallet-selector id="wallet-selector"></aep-wallet-selector>
         <div>
           <h2>Review and Sign</h2>
           <p>
@@ -242,6 +252,57 @@ function render(): void {
   app.querySelector<HTMLButtonElement>('#prepare')?.addEventListener('click', () => void prepareTransaction());
   app.querySelector<HTMLButtonElement>('#sign')?.addEventListener('click', () => void signOnly());
   app.querySelector<HTMLButtonElement>('#send')?.addEventListener('click', () => void signAndSend());
+  wireWalletUi();
+}
+
+async function syncWalletSelectorOptions(): Promise<void> {
+  const walletSelectorEl = document.getElementById('wallet-selector') as {
+    addWalletOption(wallet: Adapter): Promise<void>;
+  } | null;
+  if (!walletSelectorEl) {
+    return;
+  }
+
+  for (const wallet of availableWallets.values()) {
+    await walletSelectorEl.addWalletOption(wallet);
+  }
+}
+
+function wireWalletUi(): void {
+  const walletConnectButton = document.querySelector('aep-wallet-connect-button');
+  const walletSelectorEl = document.getElementById('wallet-selector') as {
+    open(trigger: HTMLElement): void;
+    close(): void;
+    clearSigningState(): Promise<void>;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject): void;
+  } | null;
+
+  if (!walletConnectButton || !walletSelectorEl) {
+    return;
+  }
+
+  walletConnectButton.addEventListener('aep:wc:request-connect', async () => {
+    await walletSelectorEl.clearSigningState();
+    await syncWalletSelectorOptions();
+    walletSelectorEl.open(walletConnectButton as HTMLElement);
+  });
+
+  walletConnectButton.addEventListener('aep:wc:request-disconnect', () => {
+    void connector.disconnect();
+  });
+
+  walletSelectorEl.addEventListener('aep:wc:wallet-select', async (event) => {
+    const walletName = (event as CustomEvent<string>).detail;
+    try {
+      await connector.connect(walletName);
+      walletSelectorEl.close();
+    } catch (error) {
+      status = { tone: 'error', message: getErrorMessage(error) };
+      render();
+    }
+  });
+
+  void syncWalletSelectorOptions();
 }
 
 function renderPrepared(): string {
